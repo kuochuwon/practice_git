@@ -7,7 +7,6 @@
 
 
 import requests
-# import json
 import datetime
 from openpyxl import Workbook
 from openpyxl import load_workbook
@@ -22,13 +21,16 @@ headers = {
 }
 
 
-def retrieve_shopee_item(keyword, data_count):
-    # new excel file
-    # wb = Workbook()
+def retrieve_shopee_item(keyword, accurate, data_count, search_mode):
+
     file_name = "price_trace.xlsx"
 
-    # old excel file
-    wb = load_workbook(file_name)
+    if search_mode == 1:
+        # new excel file
+        wb = Workbook()
+    elif search_mode == 2:
+        # old excel file
+        wb = load_workbook(file_name)
 
     ws = wb.active
     ws["A1"] = "更新日期"
@@ -61,7 +63,7 @@ def retrieve_shopee_item(keyword, data_count):
 
     for items in total_item:
         item_name = items.get("name")
-        if "pixel 4" in item_name:
+        if accurate in item_name:
             max_price = str(items.get("price_max"))[:-5]
             min_price = str(items.get("price_min"))[:-5]
             price = str(items.get("price"))[:-5]
@@ -72,8 +74,11 @@ def retrieve_shopee_item(keyword, data_count):
 
 
 if __name__ == "__main__":
-    keyword = "google%20pixel"
+    search_mode = int(
+        input("將搜尋符合關鍵字的蝦皮商品，請選擇要新開檔案或沿用舊檔，新檔案輸入1，舊檔案輸入2\n"))
+    keyword = input("請輸入關鍵字\n")
+    accurate = input("必須關鍵字?\n")
 
     # can only accept 1~100 by now
     data_count = 100
-    retrieve_shopee_item(keyword, data_count)
+    retrieve_shopee_item(keyword, accurate, data_count, search_mode)
